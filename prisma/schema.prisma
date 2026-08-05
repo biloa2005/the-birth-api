@@ -62,7 +62,7 @@ model BirthParent {
   @@map("birth_parents")
 }
 
-// 4. Modèle Secondaire : Les Pièces Jointes
+// 4. Modèle Secondaire : Les Pièces Joint
 model BirthAttachment {
   id         String   @id @default(cuid())
   birthId    String

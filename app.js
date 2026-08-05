@@ -3,12 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import prisma from "./src/config/prisma.js"; 
-
+import updateRoutes from "./src/routes/updateBirth.routes.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ==========================================
-// 1. CONFIGURATION DES MIDDLEWARES GLOBAUX (Toujours en premier !)
+//  CONFIGURATION DES MIDDLEWARES GLOBAUX (Toujours en premier !)
 // ==========================================
 app.use(helmet()); 
 app.use(cors()); 
@@ -17,14 +17,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
 // ==========================================
-// 2. DÉFINITION DES ROUTES
+//  DÉFINITION DES ROUTES
 // ==========================================
 
-// Route de test
-app.get('/', (req, res) => {
-    res.json({ message: "Bienvenue sur votre API Express !" });
-});
-
+app.use('/api/',updateRoutes)
 
 
 
