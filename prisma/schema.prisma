@@ -4,10 +4,90 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
+
 }
 
 datasource db {
   provider = "mysql"
+
 }
+// 1. Énumérations pour sécuriser les données de l'acte de naissance
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum BirthStatus {
+  PENDING   // En attente
+  APPROVED  // Approuvé / Validé
+  REJECTED  // Rejeté
+  ARCHIVED  // Archivé
+}
+
+// 2. Modèle Principal : L'Acte de Naissance
+model Birth {
+  id             String   @id @default(cuid())
+  actNumber      String   @unique
+  childFirstname String
+  childLastname  String
+  birthDate      DateTime
+  birthPlace     String
+  sex            Sex      // Utilisation de l'enum pour éviter les erreurs de saisie
+  status         BirthStatus @default(PENDING) // Statut de validation par défaut
+  centerId       String
+  createdBy      String
+  createdAt      DateTime @default(now())
+
+  // Relations (Un acte possède des parents, des pièces jointes et un historique)
+  parents     BirthParent[]
+  attachments BirthAttachment[]
+  histories   BirthHistory[]
+
+  @@map("births") // Optionnel : renomme la table en minuscules/pluriel dans MariaDB
+}
+
+// 3. Modèle Secondaire : Les Parents
+model BirthParent {
+  id         String  @id @default(cuid())
+  birthId    String
+  fatherName String
+  motherName String
+  fatherJob  String?
+  motherJob  String?
+
+  // Relation clé étrangère vers la table Birth
+  birth Birth @relation(fields: [birthId], references: [id], onDelete: Cascade)
+
+  @@map("birth_parents")
+}
+
+// 4. Modèle Secondaire : Les Pièces Jointes
+model BirthAttachment {
+  id         String   @id @default(cuid())
+  birthId    String
+  fileName   String
+  filePath   String
+  uploadedAt DateTime @default(now())
+
+  // Relation clé étrangère vers la table Birth
+  birth Birth @relation(fields: [birthId], references: [id], onDelete: Cascade)
+
+  @@map("birth_attachments")
+}
+
+// 5. Modèle Secondaire : L'Historique des Actions (Audit Trail)
+model BirthHistory {
+  id        String   @id @default(cuid())
+  birthId   String
+  action    String   // Ex: "CREATE", "UPDATE_STATUS", etc.
+  userId    String   // L'utilisateur qui a fait l'action
+  createdAt DateTime @default(now())
+
+  // Relation clé étrangère vers la table Birth
+  birth Birth @relation(fields: [birthId], references: [id], onDelete: Cascade)
+
+  @@map("birth_histories")
+}
+
+

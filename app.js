@@ -1,22 +1,32 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import prisma from "./src/config/prisma.js"; 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuration des middlewares globaux
-app.use(helmet()); // Sécurise les en-têtes HTTP
-app.use(cors()); // Autorise les requêtes cross-origin
-app.use(morgan('dev')); // Journalise les requêtes dans la console
-app.use(express.json()); // Permet de lire le JSON dans req.body
-app.use(express.urlencoded({ extended: true })); // Permet de lire les données de formulaires
+// ==========================================
+// 1. CONFIGURATION DES MIDDLEWARES GLOBAUX (Toujours en premier !)
+// ==========================================
+app.use(helmet()); 
+app.use(cors()); 
+app.use(morgan('dev')); 
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
+
+// ==========================================
+// 2. DÉFINITION DES ROUTES
+// ==========================================
 
 // Route de test
 app.get('/', (req, res) => {
     res.json({ message: "Bienvenue sur votre API Express !" });
 });
+
+
+
 
 // Gestion des routes non trouvées (404)
 app.use((req, res, next) => {
