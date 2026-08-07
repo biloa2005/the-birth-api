@@ -7,3 +7,4 @@ router.get("/births",allBirth);
 router.get("/births/:id", getBirthById);
 
 export default router;
+//t

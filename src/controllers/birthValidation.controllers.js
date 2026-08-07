@@ -24,7 +24,7 @@ export const validateBirth = async (req, res) => {
       });
     }
 
-    // Mettre à jour le statut
+    // Mettre à jour le statutt
     const validatedBirth = await prisma.birth.update({
       where: { id },
       data: {
