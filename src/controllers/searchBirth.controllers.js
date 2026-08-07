@@ -4,7 +4,7 @@ export const searchBirth = async (req, res) => {
   try {
     const { actNumber } = req.params;
 
-    // Vérification
+    // Vérificationn
     if (!actNumber) {
       return res.status(400).json({
         success: false,
