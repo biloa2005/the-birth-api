@@ -3,7 +3,7 @@ export const updateBirth =async (req,res,)=>{
     try{
         const {id}=req.params;
         const body=req.body;
-        //verifions que l'acte existe
+        //verifions que l'acte exist
         const birth=await prisma.birth.findUnique({
             where:{id},
 

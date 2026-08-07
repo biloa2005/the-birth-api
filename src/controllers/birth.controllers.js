@@ -129,7 +129,7 @@ try{
 }
 }
 
-//AFFICHER UNE NAISSANCE PAR IDt
+//AFFICHER UNE NAISSANCE PAR ID
 
 
 export const getBirthById = async (req, res) => {

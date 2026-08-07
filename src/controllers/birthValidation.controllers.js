@@ -16,7 +16,7 @@ export const validateBirth = async (req, res) => {
       });
     }
 
-    // Vérifier si elle est déjà validée
+    // Vérifier si elle est déjà validé
     if (birth.status === "APPROVED") {
       return res.status(400).json({
         success: false,
