@@ -111,3 +111,64 @@ return res.status(201).json({
         });
     }
 }
+//AFFICHER TOUTE LES NAISSANCE
+export const allBirth= async (req,res)=>{
+try{
+   const allBirth=await prisma.birth.findMany();
+   res.status(200).json({
+    success: true,
+    allBirth
+
+})
+}catch(error){
+    console.log(error),
+    res.status(500).json({
+        success:false,
+        message:"erreur du serveur 🕵️‍♂️"
+    })
+}
+}
+
+//AFFICHER UNE NAISSANCE PAR ID
+
+
+export const getBirthById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const birth = await prisma.birth.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        parents: true,
+        attachments: true,
+        histories: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    if (!birth) {
+      return res.status(404).json({
+        success: false,
+        message: "Naissance introuvable",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Naissance récupérée avec succès",
+      data: birth,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur interne du serveur",
+    });
+  }
+};

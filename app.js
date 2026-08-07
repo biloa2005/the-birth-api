@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import prisma from "./src/config/prisma.js"; 
 import updateRoutes from "./src/routes/updateBirth.routes.js"
 import birthRoutes from "./src/routes/birth.routes.js"
+import validationRoutes from "./src/routes/birthValidation.routes.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -24,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/',updateRoutes)
 
 app.use('/api/',birthRoutes)
-
+app.use('/api/',validationRoutes)
 
 // Gestion des routes non trouvées (404)
 app.use((req, res, next) => {
