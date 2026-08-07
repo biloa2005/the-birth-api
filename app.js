@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import prisma from "./src/config/prisma.js"; 
 import updateRoutes from "./src/routes/updateBirth.routes.js"
 import birthRoutes from "./src/routes/birth.routes.js"
+import searchRoutes from "./src/routes/searchBirth.routes.js"
 import validationRoutes from "./src/routes/birthValidation.routes.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // ==========================================gs
 
 app.use('/api/',updateRoutes)// lion
-
+app.use('/api/', searchRoutes)// lion
 app.use('/api/',birthRoutes)
 app.use('/api/',validationRoutes)
 
