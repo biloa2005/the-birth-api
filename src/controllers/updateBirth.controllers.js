@@ -75,6 +75,14 @@ if(
         data: parentData,
       });
 }
+// Enregistrer l'historique de modification
+await prisma.birthHistory.create({
+    data: {
+        birthId: id,
+        action: "UPDATE",
+        userId: req.user?.id || "SYSTEM",
+    },
+});
 return res.status(200).json({
      success: true,
       message: "Naissance modifiée avec succès",

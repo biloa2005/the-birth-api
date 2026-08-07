@@ -90,6 +90,14 @@ const birth = await prisma.birth.create({
             }
 
         });
+        // Enregistrer l'historique de modification
+await prisma.birthHistory.create({
+    data: {
+        birthId: id,
+        action: "Create",
+        userId: req.user?.id || "SYSTEM",
+    },
+});
 
 return res.status(201).json({
     success:true,
