@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import prisma from "./src/config/prisma.js"; 
 import updateRoutes from "./src/routes/updateBirth.routes.js"
 import birthRoutes from "./src/routes/birth.routes.js"
+import pdfRoutes from "./src/routes/birthPdf.routes.js"
 import attachmentRoutes from "./src/routes/birthAttachment.routes.js"
 import searchRoutes from "./src/routes/searchBirth.routes.js"
 import validationRoutes from "./src/routes/birthValidation.routes.js"
@@ -30,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/',updateRoutes)// lion
 app.use('/api/', searchRoutes)// lion
 app.use('/api/',birthRoutes)
+app.use('/api/',pdfRoutes)
 app.use('/api/',attachmentRoutes )
 
 app.use('/api/',validationRoutes)
