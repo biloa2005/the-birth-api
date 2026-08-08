@@ -9,6 +9,9 @@ import historyRoutes from "./src/routes/birthHistory.routes.js"
 import pdfRoutes from "./src/routes/birthPdf.routes.js"
 import attachmentRoutes from "./src/routes/birthAttachment.routes.js"
 import searchRoutes from "./src/routes/searchBirth.routes.js"
+
+import YAML from "yamljs";
+import swaggerUi from "swagger-ui-express";
 import validationRoutes from "./src/routes/birthValidation.routes.js"
 import multer from 'multer';
 
@@ -36,6 +39,14 @@ app.use('/api/',pdfRoutes)
 app.use('/api/',attachmentRoutes )
 app.use('/api/',historyRoutes)
 app.use('/api/',validationRoutes)
+//swagger
+const swaggerDocument = YAML.load("./docs/swagger.yaml");
+
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument)
+);
 
 // Gestion des routes non trouvées (404)
 app.use((req, res, next) => {

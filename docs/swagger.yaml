@@ -1,0 +1,108 @@
+openapi: 3.0.3
+
+info:
+  title: API SIVEC
+  description: API de gestion des actes de naissance
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:4000/api
+    description: Serveur local
+
+tags:
+  - name: Births
+    description: Gestion des naissances
+
+paths:
+
+  /births:
+    post:
+      tags:
+        - Births
+
+      summary: Enregistrer une naissance
+
+      description: Crée un nouvel acte de naissance.
+
+      requestBody:
+        required: true
+
+        content:
+          application/json:
+            schema:
+              type: object
+
+              required:
+                - firstName
+                - lastName
+                - dateOfBirth
+
+              properties:
+                firstName:
+                  type: string
+                  example: Jean
+
+                lastName:
+                  type: string
+                  example: Dupont
+
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: 2026-08-08
+
+      responses:
+        '201':
+          description: Naissance enregistrée avec succès
+
+        '400':
+          description: Données invalides
+
+        '500':
+          description: Erreur serveur
+
+
+    get:
+      tags:
+        - Births
+
+      summary: Récupérer toutes les naissances
+
+      responses:
+        '200':
+          description: Liste des naissances
+
+        '500':
+          description: Erreur serveur
+
+
+  /births/{id}:
+
+    get:
+      tags:
+        - Births
+
+      summary: Récupérer une naissance
+
+      description: Retourne les informations d'une naissance à partir de son identifiant.
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+
+          schema:
+            type: string
+
+          example: cld1234567890abcdefg
+
+      responses:
+
+        '200':
+          description: Naissance trouvée
+
+        '404':
+          description: Naissance introuvable
+
+        '500':
+          description: Erreur serveur
