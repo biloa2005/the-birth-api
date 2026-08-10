@@ -6,103 +6,564 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:4000/api
+  - url: http://localhost:3000/api
     description: Serveur local
 
 tags:
-  - name: Births
+  - name: Naissances
     description: Gestion des naissances
 
 paths:
-
   /births:
     post:
+      summary: Enregistrer une nouvelle naissance
+      description: Crée un acte de naissance avec génération automatique du numéro d'acte, enregistrement des parents et initialisation de l'historique.
       tags:
-        - Births
-
-      summary: Enregistrer une naissance
-
-      description: Crée un nouvel acte de naissance.
-
+        - Naissances
       requestBody:
         required: true
-
         content:
           application/json:
             schema:
               type: object
-
               required:
-                - firstName
-                - lastName
-                - dateOfBirth
-
+                - childFirstname
+                - childLastname
+                - birthDate
+                - birthPlace
+                - sex
+                - fatherName
+                - motherName
               properties:
-                firstName:
+                childFirstname:
                   type: string
-                  example: Jean
-
-                lastName:
+                  example: "Jean"
+                childLastname:
                   type: string
-                  example: Dupont
-
-                dateOfBirth:
+                  example: "Kamdem"
+                birthDate:
                   type: string
                   format: date
-                  example: 2026-08-08
-
+                  example: "2026-08-09"
+                birthPlace:
+                  type: string
+                  example: "Hôpital Central de Yaoundé"
+                sex:
+                  type: string
+                  enum: [M, F]
+                  example: "M"
+                centerId:
+                  type: string
+                  example: "center-123"
+                fatherName:
+                  type: string
+                  example: "Paul Kamdem"
+                motherName:
+                  type: string
+                  example: "Marie Ngo"
+                fatherJob:
+                  type: string
+                  example: "Ingénieur"
+                motherJob:
+                  type: string
+                  example: "Enseignante"
       responses:
         '201':
           description: Naissance enregistrée avec succès
-
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "naissance enregistree"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "clhb123456"
+                      actNumber:
+                        type: string
+                        example: "YAO05-2026-000001"
         '400':
-          description: Données invalides
-
+          description: Champs obligatoires manquants
         '500':
-          description: Erreur serveur
-
+          description: Erreur interne du serveur
 
     get:
-      tags:
-        - Births
-
       summary: Récupérer toutes les naissances
-
+      description: Renvoie la liste complète de tous les actes de naissance enregistrés dans le système.
+      tags:
+        - Naissances
       responses:
         '200':
-          description: Liste des naissances
-
+          description: Liste des naissances récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  allBirth:
+                    type: array
+                    items:
+                      type: object
         '500':
-          description: Erreur serveur
-
+          description: Erreur interne du serveur
 
   /births/{id}:
-
-    get:
+    post:
+      summary: Récupérer une naissance par son ID
+      description: Renvoie les détails d'une naissance spécifique, incluant les parents, les pièces jointes et l'historique des modifications.
       tags:
-        - Births
-
-      summary: Récupérer une naissance
-
-      description: Retourne les informations d'une naissance à partir de son identifiant.
-
+        - Naissances
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
-
           schema:
             type: string
-
-          example: cld1234567890abcdefg
-
+          description: L'identifiant unique de la naissance
+          example: "clhb123456"
       responses:
-
         '200':
-          description: Naissance trouvée
-
+          description: Naissance récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Naissance récupérée avec succès"
+                  data:
+                    type: object
         '404':
-          description: Naissance introuvable
-
+          description: Naissance introuvable avec l'ID fourni
         '500':
-          description: Erreur serveur
+          description: Erreur interne du serveur
+  /births/{id}/attachments:
+    post:
+      summary: Ajouter une pièce jointe à une naissance
+      description: Permet d'uploader un fichier (image, PDF, etc.) lié à un acte de naissance spécifique via un formulaire `multipart/form-data`.
+      tags:
+        - Naissances
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'identifiant unique de la naissance
+          example: "clhb123456"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Le fichier physique à uploader
+      responses:
+        '201':
+          description: Pièce jointe ajoutée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Pièce jointe ajoutée avec succès"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "attach-789"
+                      birthId:
+                        type: string
+                        example: "clhb123456"
+                      fileName:
+                        type: string
+                        example: "acte_medical.pdf"
+                      filePath:
+                        type: string
+                        example: "uploads/acte_medical.pdf"
+        '400':
+          description: Aucun fichier envoyé dans la requête
+        '404':
+          description: Naissance introuvable avec l'ID fourni
+        '500':
+          description: Erreur interne du serveur lors du traitement du fichier
+  /births/{id}/history:
+    get:
+      summary: Récupérer l'historique d'une naissance
+      description: Renvoie toutes les actions et modifications enregistrées (création, ajouts de pièces jointes, etc.) pour un acte de naissance spécifique, triées de la plus récente à la plus ancienne.
+      tags:
+        - Naissances
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'identifiant unique de la naissance
+          example: "clhb123456"
+      responses:
+        '200':
+          description: Historique récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Historique récupéré avec succès"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "hist-999"
+                        birthId:
+                          type: string
+                          example: "clhb123456"
+                        action:
+                          type: string
+                          example: "ADD_ATTACHMENT"
+                        userId:
+                          type: string
+                          example: "SYSTEM"
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2026-08-09T18:30:00.000Z"
+        '404':
+          description: Naissance introuvable avec l'ID fourni
+        '500':
+          description: Erreur interne du serveur
+  /births/{id}/print:
+    post:
+      summary: Générer et imprimer l'acte de naissance en PDF
+      description: Génère le document PDF officiel de l'acte de naissance (format A4 aux couleurs de la République du Cameroun) uniquement si le statut de l'acte est `APPROVED`. Renvoie directement le fichier binaire pour affichage ou téléchargement.
+      tags:
+        - Naissances
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'identifiant unique de la naissance
+          example: "clhb123456"
+      responses:
+        '200':
+          description: Le fichier PDF généré avec succès
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: L'acte ne peut pas être imprimé car il n'est pas encore validé (Statut différent de APPROVED)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Cet acte n'est pas encore validé"
+        '404':
+          description: Acte introuvable avec l'ID fourni
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Acte introuvable"
+        '500':
+          description: Erreur interne du serveur lors de la génération du PDF
+  /births/{id}/validate:
+    post:
+      summary: Valider un acte de naissance
+      description: Passe le statut d'un acte de naissance à `APPROVED` et enregistre cette action de validation dans l'historique du document. Une fois validé, l'acte devient disponible pour l'impression.
+      tags:
+        - Naissances
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'identifiant unique de la naissance
+          example: "clhb123456"
+      responses:
+        '200':
+          description: Acte validé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Acte validé avec succès"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "clhb123456"
+                      status:
+                        type: string
+                        example: "APPROVED"
+        '400':
+          description: L'acte est déjà validé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Cette naissance est déjà validée"
+        '404':
+          description: Naissance introuvable avec l'ID fourni
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Naissance introuvable"
+        '500':
+          description: Erreur interne du serveur
+  /births/search/{actNumber}:
+    post:
+      summary: Rechercher un acte de naissance par son numéro
+      description: Permet de retrouver un acte de naissance spécifique à partir de son numéro d'acte unique (ex: YAO05-2026-000001). Renvoie l'acte avec ses parents et ses pièces jointes si trouvé.
+      tags:
+        - Naissances
+      parameters:
+        - in: path
+          name: actNumber
+          required: true
+          schema:
+            type: string
+          description: Le numéro officiel de l'acte de naissance à rechercher
+          example: "YAO05-2026-000001"
+      responses:
+        '200':
+          description: Acte de naissance trouvé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Acte trouvé."
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "clhb123456"
+                      actNumber:
+                        type: string
+                        example: "YAO05-2026-000001"
+                      parents:
+                        type: array
+                        items:
+                          type: object
+                      attachments:
+                        type: array
+                        items:
+                          type: object
+        '400':
+          description: Le numéro d'acte est manquant dans l'URL
+        '404':
+          description: Aucun acte de naissance ne correspond à ce numéro
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Aucun acte trouvé."
+        '500':
+          description: Erreur interne du serveur
+  /birth/{id}:
+    put:
+      summary: Modifier dynamiquement un acte de naissance et ses parents
+      description: Reçoit un objet JSON partiel. Met à jour les champs de l'acte fournis dans la requête (`req.body`). Si des champs concernant les parents sont détectés (`fatherName`, `motherName`, etc.), une mise à jour groupée est exécutée. Bloque la modification si le statut actuel est `APPROVED`. Enregistre l'action `UPDATE` dans l'historique.
+      tags:
+        - Naissances
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'identifiant unique (ID Prisma) de l'acte de naissance à modifier
+          example: "clhb123456"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                childFirstname:
+                  type: string
+                  example: "Jean"
+                childLastname:
+                  type: string
+                  example: "Kamdem"
+                birthDate:
+                  type: string
+                  format: date
+                  example: "2026-08-09"
+                birthPlace:
+                  type: string
+                  example: "Hôpital Central de Yaoundé"
+                sex:
+                  type: string
+                  enum: [M, F]
+                  example: "M"
+                centerId:
+                  type: string
+                  example: "center-123"
+                status:
+                  type: string
+                  enum: [PENDING, APPROVED, REJECTED]
+                  example: "PENDING"
+                fatherName:
+                  type: string
+                  example: "Paul Kamdem"
+                motherName:
+                  type: string
+                  example: "Marie Ngo"
+                fatherJob:
+                  type: string
+                  example: "Ingénieur"
+                motherJob:
+                  type: string
+                  example: "Enseignante"
+      responses:
+        '200':
+          description: L'acte de naissance principal a été modifié avec succès (les parents sont mis à jour en tâche de fond)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Naissance modifiée avec succès"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "clhb123456"
+                      childFirstname:
+                        type: string
+                        example: "Jean"
+                      status:
+                        type: string
+                        example: "PENDING"
+        '400':
+          description: Refus de modification car l'acte est déjà validé définitivement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Une naissance validée ne peut plus être modifiée"
+        '404':
+          description: Aucun acte trouvé en base de données pour l'ID soumis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "naissance introuvable"
+        '500':
+          description: Erreur interne du serveur (renvoie le message brut de l'exception Prisma)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Foreign key constraint failed..."
+

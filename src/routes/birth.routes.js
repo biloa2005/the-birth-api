@@ -4,7 +4,7 @@ import { createBirth, allBirth, getBirthById } from "../controllers/birth.contro
 const router=Router()
 router.post("/births", createBirth);
 router.get("/births",allBirth);
-router.get("/births/:id", getBirthById);
+router.post("/births/:id", getBirthById);
 
 export default router;
 //
