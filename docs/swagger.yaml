@@ -152,6 +152,61 @@ paths:
           description: Naissance introuvable avec l'ID fourni
         '500':
           description: Erreur interne du serveur
+    delete:
+      summary: Supprimer une naissance non validée
+      description: Supprime un acte de naissance uniquement si son statut est `PENDING`. Les actes validés ou rejetés ne peuvent pas être supprimés.
+      tags:
+        - Naissances
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: L'identifiant unique de la naissance
+          example: "clhb123456"
+      responses:
+        '200':
+          description: Naissance non validée supprimée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Naissance non validée supprimée avec succès"
+        '400':
+          description: La naissance ne peut pas être supprimée car elle est déjà validée ou rejetée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Seules les naissances non validées peuvent être supprimées"
+        '404':
+          description: Naissance introuvable avec l'ID fourni
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Naissance introuvable"
+        '500':
+          description: Erreur interne du serveur
   /births/{id}/attachments:
     post:
       summary: Ajouter une pièce jointe à une naissance

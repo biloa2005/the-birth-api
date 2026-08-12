@@ -180,3 +180,43 @@ export const getBirthById = async (req, res) => {
     });
   }
 };
+
+export const deleteBirth = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const birth = await prisma.birth.findUnique({
+      where: { id },
+    });
+
+    if (!birth) {
+      return res.status(404).json({
+        success: false,
+        message: "Naissance introuvable",
+      });
+    }
+
+    if (birth.status !== "PENDING") {
+      return res.status(400).json({
+        success: false,
+        message: "Seules les naissances non validées peuvent être supprimées",
+      });
+    }
+
+    await prisma.birth.delete({
+      where: { id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Naissance non validée supprimée avec succès",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Erreur interne du serveur",
+    });
+  }
+};
