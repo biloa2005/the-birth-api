@@ -16,13 +16,20 @@ import validationRoutes from "./src/routes/birthValidation.routes.js"
 import multer from 'multer';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
+
+const corsOptions = {
+  origin: 'http://localhost:5173', // Remplacez par l'URL de votre application frontend (ex: React, Vue, Angular)
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type,Authorization',
+  credentials: true // Autorise l'envoi des cookies et en-têtes d'authentification
+};
 
 // ==========================================
 //  CONFIGURATION DES MIDDLEWARES GLOBAUX (Toujours en premier !)
 // ==========================================
 app.use(helmet()); 
-app.use(cors()); 
+app.use(cors(corsOptions)); 
 app.use(morgan('dev')); 
 app.use(express.json()); 
 

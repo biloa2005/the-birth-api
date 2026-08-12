@@ -93,8 +93,8 @@ const birth = await prisma.birth.create({
         // Enregistrer l'historique de modification
 await prisma.birthHistory.create({
     data: {
-        birthId: id,
-        action: "Create",
+    birthId: birth.id,
+    action: "CREATE",
         userId: req.user?.id || "SYSTEM",
     },
 });
@@ -129,11 +129,11 @@ try{
 
 })
 }catch(error){
-    console.log(error),
-    res.status(500).json({
-        success:false,
-        message:"erreur du serveur 🕵️‍♂️"
-    })
+  console.error(error?.stack || error);
+  res.status(500).json({
+    success:false,
+    message:"erreur du serveur 🕵️‍♂️"
+  });
 }
 }
 

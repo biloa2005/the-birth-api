@@ -122,4 +122,4 @@ npx prisma generate
 Projet sans licence précisée.
 
 ## lien pour la docs swagger
-http://localhost:3000/api-docs/#/
+http://localhost:4000/api-docs/#/
