@@ -118,6 +118,84 @@ paths:
         '500':
           description: Erreur interne du serveur
 
+  /births/dashboard:
+    get:
+      summary: Obtenir les statistiques du dashboard des naissances
+      description: Renvoie le nombre total de naissances, le nombre de naissances validées, le nombre de naissances en brouillon, le nombre de naissances créées aujourd'hui et les 5 naissances les plus récentes.
+      tags:
+        - Naissances
+      responses:
+        '200':
+          description: Statistiques de dashboard récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Statistiques du dashboard des naissances récupérées avec succès"
+                  data:
+                    type: object
+                    properties:
+                      totalBirths:
+                        type: integer
+                        example: 120
+                      approvedBirths:
+                        type: integer
+                        example: 80
+                      pendingBirths:
+                        type: integer
+                        example: 25
+                      birthsToday:
+                        type: integer
+                        example: 3
+                      latestBirths:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "clhb123456"
+                            actNumber:
+                              type: string
+                              example: "YAO05-2026-000001"
+                            childFirstname:
+                              type: string
+                              example: "Jean"
+                            childLastname:
+                              type: string
+                              example: "Kamdem"
+                            status:
+                              type: string
+                              example: "PENDING"
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example: "2026-08-12T08:30:00.000Z"
+                            parents:
+                              type: array
+                              items:
+                                type: object
+                                properties: {}
+        '500':
+          description: Erreur interne du serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erreur interne du serveur"
+
   /births/{id}:
     post:
       summary: Récupérer une naissance par son ID

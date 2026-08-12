@@ -220,3 +220,55 @@ export const deleteBirth = async (req, res) => {
     });
   }
 };
+
+export const getBirthDashboard = async (req, res) => {
+  try {
+    const totalBirths = await prisma.birth.count();
+    const approvedBirths = await prisma.birth.count({
+      where: { status: "APPROVED" },
+    });
+    const pendingBirths = await prisma.birth.count({
+      where: { status: "PENDING" },
+    });
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const tomorrowStart = new Date(todayStart);
+    tomorrowStart.setDate(todayStart.getDate() + 1);
+
+    const birthsToday = await prisma.birth.count({
+      where: {
+        createdAt: {
+          gte: todayStart,
+          lt: tomorrowStart,
+        },
+      },
+    });
+
+    const latestBirths = await prisma.birth.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: {
+        parents: true,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Statistiques du dashboard des naissances récupérées avec succès",
+      data: {
+        totalBirths,
+        approvedBirths,
+        pendingBirths,
+        birthsToday,
+        latestBirths,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Erreur interne du serveur",
+    });
+  }
+};
