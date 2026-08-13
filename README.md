@@ -1,6 +1,43 @@
 # Birth API
 
 API de gestion des actes de naissance pour le projet SIVEC.
+##  Présentation
+
+**SIVEC** est une application web destinée à la gestion, au contrôle et à la vérification des actes de naissance.
+
+L'application permet aux agents des centres d'état civil de :
+
+- enregistrer une naissance ;
+- consulter les actes de naissance ;
+- rechercher un acte par numéro d'acte ;
+- modifier les actes non encore validés ;
+- valider les actes ;
+- supprimer les actes en attente ;
+- ajouter des pièces jointes ;
+- générer les actes au format PDF ;
+- consulter les statistiques des naissances ;
+- gérer les informations relatives aux parents ;
+- suivre le statut des actes.
+
+L'objectif est de **digitaliser et sécuriser la gestion des actes de naissance**, tout en facilitant le travail des agents d'état civil.
+
+---
+
+#  Objectifs du projet
+
+Le projet vise principalement à :
+
+1. Digitaliser l'enregistrement des naissances.
+2. Centraliser les informations relatives aux actes.
+3. Faciliter la recherche et la consultation des actes.
+4. Réduire les erreurs liées à la gestion manuelle des documents.
+5. Permettre la validation des actes par les agents habilités.
+6. Associer des documents justificatifs aux actes.
+7. Générer automatiquement les actes de naissance en PDF.
+8. Fournir un tableau de bord statistique.
+9. Améliorer la traçabilité des opérations.
+10. Préparer une architecture évolutive et sécurisée.
+
 
 ## Description
 
