@@ -515,23 +515,37 @@ paths:
                     example: "Naissance introuvable"
         '500':
           description: Erreur interne du serveur
-  /births/search/{actNumber}:
+  /births/search:
     post:
-      summary: Rechercher un acte de naissance par son numéro
-      description: Permet de retrouver un acte de naissance spécifique à partir de son numéro d'acte unique (ex: YAO05-2026-000001). Renvoie l'acte avec ses parents et ses pièces jointes si trouvé.
+      summary: Rechercher un acte de naissance
+      description: Recherche un acte par son numéro, son nom, son prénom ou une combinaison du nom et du prénom de l'enfant. Les critères sont transmis dans la chaîne de requête. La recherche par nom ou prénom peut retourner plusieurs actes.
       tags:
         - Naissances
       parameters:
-        - in: path
+        - in: query
           name: actNumber
-          required: true
+          required: false
           schema:
             type: string
-          description: Le numéro officiel de l'acte de naissance à rechercher
+          description: Numéro officiel de l'acte de naissance à rechercher. Si fourni, ce critère est prioritaire.
           example: "YAO05-2026-000001"
+        - in: query
+          name: childLastname
+          required: false
+          schema:
+            type: string
+          description: Nom de famille de l'enfant, recherché partiellement si nécessaire.
+          example: "NGONO"
+        - in: query
+          name: childFirstname
+          required: false
+          schema:
+            type: string
+          description: Prénom de l'enfant, recherché partiellement si nécessaire.
+          example: "Paul"
       responses:
         '200':
-          description: Acte de naissance trouvé avec succès
+          description: Acte(s) de naissance trouvé(s) avec succès
           content:
             application/json:
               schema:
@@ -542,28 +556,50 @@ paths:
                     example: true
                   message:
                     type: string
-                    example: "Acte trouvé."
+                    examples:
+                      acteParNumero: "Acte trouvé."
+                      actesParNom: "2 actes trouvés."
+                  searchType:
+                    type: string
+                    enum: [actNumber, name]
+                    example: "name"
+                  count:
+                    type: integer
+                    example: 2
                   data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        example: "clhb123456"
-                      actNumber:
-                        type: string
-                        example: "YAO05-2026-000001"
-                      parents:
-                        type: array
-                        items:
-                          type: object
-                      attachments:
-                        type: array
+                    description: Objet unique pour une recherche par numéro ; tableau pour une recherche par nom ou prénom.
+                    oneOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "clhb123456"
+                          actNumber:
+                            type: string
+                            example: "YAO05-2026-000001"
+                          childFirstname:
+                            type: string
+                            example: "Paul"
+                          childLastname:
+                            type: string
+                            example: "NGONO"
+                          parents:
+                            type: array
+                            items:
+                              type: object
+                          attachments:
+                            type: array
+                            items:
+                              type: object
+                          histories:
+                            type: array
+                            items:
+                              type: object
+                      - type: array
                         items:
                           type: object
         '400':
-          description: Le numéro d'acte est manquant dans l'URL
-        '404':
-          description: Aucun acte de naissance ne correspond à ce numéro
+          description: Aucun critère de recherche n'a été fourni.
           content:
             application/json:
               schema:
@@ -574,7 +610,34 @@ paths:
                     example: false
                   message:
                     type: string
-                    example: "Aucun acte trouvé."
+                    example: "Veuillez fournir un numéro d'acte, un nom ou un prénom."
+        '404':
+          description: Aucun acte ne correspond aux informations fournies.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    examples:
+                      numero: "Aucun acte trouvé avec ce numéro d'acte."
+                      nom: "Aucun acte trouvé avec les informations fournies."
+                  searchType:
+                    type: string
+                    example: "name"
+                  count:
+                    type: integer
+                    example: 0
+                  data:
+                    oneOf:
+                      - type: array
+                        items: {}
+                      - type: 'null'
+                    example: []
         '500':
           description: Erreur interne du serveur
   /birth/{id}:
