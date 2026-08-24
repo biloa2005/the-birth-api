@@ -518,7 +518,17 @@ paths:
   /births/search:
     post:
       summary: Rechercher un acte de naissance
-      description: Recherche un acte par son numéro, son nom, son prénom ou une combinaison du nom et du prénom de l'enfant. Les critères sont transmis dans la chaîne de requête. La recherche par nom ou prénom peut retourner plusieurs actes.
+      description: |
+        Recherche un acte par son numéro, son nom, son prénom ou une combinaison du nom et du prénom de l'enfant.
+        Les critères sont transmis dans la chaîne de requête.
+
+        Exemples :
+        - `/api/births/search?actNumber=YAO05-2026-000001`
+        - `/api/births/search?childLastname=NGONO`
+        - `/api/births/search?childFirstname=Paul`
+        - `/api/births/search?childLastname=NGONO&childFirstname=Paul`
+
+        Si `actNumber` est fourni avec un nom ou un prénom, la recherche par numéro est prioritaire.
       tags:
         - Naissances
       parameters:
@@ -556,9 +566,7 @@ paths:
                     example: true
                   message:
                     type: string
-                    examples:
-                      acteParNumero: "Acte trouvé."
-                      actesParNom: "2 actes trouvés."
+                    example: "2 actes trouvés."
                   searchType:
                     type: string
                     enum: [actNumber, name]
@@ -623,9 +631,7 @@ paths:
                     example: false
                   message:
                     type: string
-                    examples:
-                      numero: "Aucun acte trouvé avec ce numéro d'acte."
-                      nom: "Aucun acte trouvé avec les informations fournies."
+                    example: "Aucun acte trouvé avec les informations fournies."
                   searchType:
                     type: string
                     example: "name"

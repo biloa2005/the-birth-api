@@ -2,6 +2,17 @@ import prisma from "../config/prisma.js";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 
+// =====================================================
+// FORMAT DE PAGE PERSONNALISÉ : 21 cm x 33 cm
+// (1 cm = 28.3465 pt)
+// => légèrement plus long que l'A4 standard (21 x 29.7 cm)
+// =====================================================
+
+const CM = 28.3465;
+const PAGE_WIDTH = 21 * CM;   // ≈ 595.28 pt
+const PAGE_HEIGHT = 33 * CM;  // ≈ 935.43 pt
+
+
 export const printBirth = async (req, res) => {
 
   try {
@@ -73,12 +84,12 @@ export const printBirth = async (req, res) => {
 
 
     // =====================================================
-    // DOCUMENT A4
+    // DOCUMENT — FORMAT 21 x 33 cm
     // =====================================================
 
     const doc = new PDFDocument({
 
-      size: "A4",
+      size: [PAGE_WIDTH, PAGE_HEIGHT],
 
       margin: 0,
 
@@ -123,32 +134,32 @@ export const printBirth = async (req, res) => {
     // =====================================================
 
     doc
-      .rect(0, 0, 595, 7)
+      .rect(0, 0, 198.4, 8)
       .fill(GREEN);
 
     doc
-      .rect(198, 0, 199, 7)
+      .rect(198.4, 0, 198.4, 8)
       .fill(RED);
 
     doc
-      .rect(397, 0, 198, 7)
+      .rect(396.8, 0, 198.5, 8)
       .fill(YELLOW);
 
 
     // =====================================================
-    // EN-TÊTE
+    // EN-TÊTE — RÉPUBLIQUE & DEVISE
     // =====================================================
 
     doc
       .fillColor(GREEN)
       .font("Helvetica-Bold")
-      .fontSize(16)
+      .fontSize(17)
       .text(
         "RÉPUBLIQUE DU CAMEROUN",
         50,
-        30,
+        28,
         {
-          width: 380,
+          width: 495,
           align: "center"
         }
       );
@@ -161,36 +172,49 @@ export const printBirth = async (req, res) => {
       .text(
         "Paix - Travail - Patrie",
         50,
-        51,
+        49,
         {
-          width: 380,
+          width: 495,
           align: "center"
         }
       );
 
 
     // =====================================================
-    // QR CODE HAUT DROITE
+    // EN-TÊTE — MINISTÈRE
     // =====================================================
 
-    // Pour laisser de la place en haut,
-    // on ne met pas le QR ici.
+    doc
+      .fillColor(DARK)
+      .font("Helvetica-Bold")
+      .fontSize(9)
+      .text(
+        "MINISTÈRE DE LA DÉCENTRALISATION ET DU DÉVELOPPEMENT LOCAL",
+        50,
+        67,
+        {
+          width: 495,
+          align: "center"
+        }
+      );
 
+
+   
 
     // =====================================================
     // LIGNE TRICOLORE
     // =====================================================
 
     doc
-      .rect(50, 75, 165, 3)
+      .rect(50, 154, 165, 3)
       .fill(GREEN);
 
     doc
-      .rect(215, 75, 165, 3)
+      .rect(215, 154, 165, 3)
       .fill(RED);
 
     doc
-      .rect(380, 75, 165, 3)
+      .rect(380, 154, 165, 3)
       .fill(YELLOW);
 
 
@@ -200,11 +224,11 @@ export const printBirth = async (req, res) => {
 
     doc
       .roundedRect(
-        110,
-        95,
-        375,
-        42,
-        5
+        60,
+        171,
+        475,
+        50,
+        6
       )
       .fill(GREEN);
 
@@ -212,13 +236,13 @@ export const printBirth = async (req, res) => {
     doc
       .fillColor("#FFFFFF")
       .font("Helvetica-Bold")
-      .fontSize(17)
+      .fontSize(20)
       .text(
         "ACTE DE NAISSANCE",
-        110,
-        108,
+        60,
+        187,
         {
-          width: 375,
+          width: 475,
           align: "center"
         }
       );
@@ -231,22 +255,22 @@ export const printBirth = async (req, res) => {
     doc
       .fillColor(DARK)
       .font("Helvetica-Bold")
-      .fontSize(9)
+      .fontSize(10)
       .text(
         "NUMÉRO DE L'ACTE",
         50,
-        155
+        238
       );
 
 
     doc
       .fillColor(RED)
       .font("Helvetica-Bold")
-      .fontSize(13)
+      .fontSize(15)
       .text(
         birth.actNumber,
         50,
-        170
+        255
       );
 
 
@@ -257,16 +281,16 @@ export const printBirth = async (req, res) => {
     doc
       .fillColor(GREEN)
       .font("Helvetica-Bold")
-      .fontSize(12)
+      .fontSize(13)
       .text(
         "INFORMATIONS DE L'ENFANT",
         50,
-        205
+        297
       );
 
 
     doc
-      .rect(50, 224, 495, 2)
+      .rect(50, 318, 495, 2)
       .fill(YELLOW);
 
 
@@ -275,10 +299,10 @@ export const printBirth = async (req, res) => {
     doc
       .roundedRect(
         50,
-        238,
+        335,
         495,
-        105,
-        5
+        130,
+        6
       )
       .fill(LIGHT);
 
@@ -286,10 +310,10 @@ export const printBirth = async (req, res) => {
     doc
       .roundedRect(
         50,
-        238,
+        335,
         495,
-        105,
-        5
+        130,
+        6
       )
       .strokeColor("#D1D5DB")
       .lineWidth(1)
@@ -301,19 +325,20 @@ export const printBirth = async (req, res) => {
     doc
       .fillColor(DARK)
       .font("Helvetica-Bold")
-      .fontSize(9)
+      .fontSize(10)
       .text(
         "Nom",
         70,
-        255
+        358
       );
 
     doc
       .font("Helvetica")
+      .fontSize(10)
       .text(
         birth.childLastname || "-",
-        175,
-        255
+        190,
+        358
       );
 
 
@@ -324,15 +349,15 @@ export const printBirth = async (req, res) => {
       .text(
         "Prénom",
         70,
-        278
+        387
       );
 
     doc
       .font("Helvetica")
       .text(
         birth.childFirstname || "-",
-        175,
-        278
+        190,
+        387
       );
 
 
@@ -343,7 +368,7 @@ export const printBirth = async (req, res) => {
       .text(
         "Date de naissance",
         70,
-        301
+        416
       );
 
     doc
@@ -352,8 +377,8 @@ export const printBirth = async (req, res) => {
         new Date(
           birth.birthDate
         ).toLocaleDateString("fr-FR"),
-        175,
-        301
+        190,
+        416
       );
 
 
@@ -364,15 +389,15 @@ export const printBirth = async (req, res) => {
       .text(
         "Lieu de naissance",
         70,
-        324
+        445
       );
 
     doc
       .font("Helvetica")
       .text(
         birth.birthPlace || "-",
-        175,
-        324
+        190,
+        445
       );
 
 
@@ -383,7 +408,7 @@ export const printBirth = async (req, res) => {
       .text(
         "Sexe",
         390,
-        255
+        358
       );
 
     doc
@@ -392,8 +417,8 @@ export const printBirth = async (req, res) => {
         birth.sex === "MALE"
           ? "Masculin"
           : "Féminin",
-        445,
-        255
+        450,
+        358
       );
 
 
@@ -404,16 +429,16 @@ export const printBirth = async (req, res) => {
     doc
       .fillColor(GREEN)
       .font("Helvetica-Bold")
-      .fontSize(12)
+      .fontSize(13)
       .text(
         "INFORMATIONS DES PARENTS",
         50,
-        365
+        495
       );
 
 
     doc
-      .rect(50, 384, 495, 2)
+      .rect(50, 516, 495, 2)
       .fill(YELLOW);
 
 
@@ -422,10 +447,10 @@ export const printBirth = async (req, res) => {
     doc
       .roundedRect(
         50,
-        398,
+        533,
         495,
-        105,
-        5
+        130,
+        6
       )
       .fill("#FFFFFF");
 
@@ -433,10 +458,10 @@ export const printBirth = async (req, res) => {
     doc
       .roundedRect(
         50,
-        398,
+        533,
         495,
-        105,
-        5
+        130,
+        6
       )
       .strokeColor("#D1D5DB")
       .lineWidth(1)
@@ -453,22 +478,22 @@ export const printBirth = async (req, res) => {
       doc
         .fillColor(RED)
         .font("Helvetica-Bold")
-        .fontSize(10)
+        .fontSize(11)
         .text(
           "PÈRE",
           70,
-          415
+          554
         );
 
 
       doc
         .fillColor(DARK)
         .font("Helvetica-Bold")
-        .fontSize(9)
+        .fontSize(10)
         .text(
           "Nom",
           70,
-          438
+          582
         );
 
 
@@ -476,8 +501,8 @@ export const printBirth = async (req, res) => {
         .font("Helvetica")
         .text(
           parent.fatherName || "-",
-          150,
-          438
+          160,
+          582
         );
 
 
@@ -486,7 +511,7 @@ export const printBirth = async (req, res) => {
         .text(
           "Profession",
           70,
-          460
+          608
         );
 
 
@@ -494,8 +519,8 @@ export const printBirth = async (req, res) => {
         .font("Helvetica")
         .text(
           parent.fatherJob || "-",
-          150,
-          460
+          160,
+          608
         );
 
 
@@ -504,22 +529,22 @@ export const printBirth = async (req, res) => {
       doc
         .fillColor(GREEN)
         .font("Helvetica-Bold")
-        .fontSize(10)
+        .fontSize(11)
         .text(
           "MÈRE",
           320,
-          415
+          554
         );
 
 
       doc
         .fillColor(DARK)
         .font("Helvetica-Bold")
-        .fontSize(9)
+        .fontSize(10)
         .text(
           "Nom",
           320,
-          438
+          582
         );
 
 
@@ -527,8 +552,8 @@ export const printBirth = async (req, res) => {
         .font("Helvetica")
         .text(
           parent.motherName || "-",
-          380,
-          438
+          400,
+          582
         );
 
 
@@ -537,7 +562,7 @@ export const printBirth = async (req, res) => {
         .text(
           "Profession",
           320,
-          460
+          608
         );
 
 
@@ -545,11 +570,56 @@ export const printBirth = async (req, res) => {
         .font("Helvetica")
         .text(
           parent.motherJob || "-",
-          380,
-          460
+          400,
+          608
         );
 
     }
+
+
+    // =====================================================
+    // MENTIONS MARGINALES
+    // =====================================================
+
+    doc
+      .fillColor(GREEN)
+      .font("Helvetica-Bold")
+      .fontSize(13)
+      .text(
+        "MENTIONS MARGINALES",
+        50,
+        693
+      );
+
+    doc
+      .rect(50, 714, 495, 2)
+      .fill(YELLOW);
+
+    doc
+      .roundedRect(
+        50,
+        731,
+        495,
+        60,
+        6
+      )
+      .strokeColor("#D1D5DB")
+      .lineWidth(1)
+      .stroke();
+
+    doc
+      .moveTo(64, 751)
+      .lineTo(521, 751)
+      .strokeColor("#D1D5DB")
+      .lineWidth(0.5)
+      .stroke();
+
+    doc
+      .moveTo(64, 771)
+      .lineTo(521, 771)
+      .strokeColor("#D1D5DB")
+      .lineWidth(0.5)
+      .stroke();
 
 
     // =====================================================
@@ -561,10 +631,10 @@ export const printBirth = async (req, res) => {
     doc.image(
       qrCode,
       55,
-      535,
+      809,
       {
-        width: 90,
-        height: 90
+        width: 80,
+        height: 80
       }
     );
 
@@ -574,13 +644,13 @@ export const printBirth = async (req, res) => {
     doc
       .fillColor(GREY)
       .font("Helvetica")
-      .fontSize(7)
+      .fontSize(6.5)
       .text(
         "Scanner pour vérifier l'authenticité",
         45,
-        628,
+        894,
         {
-          width: 110,
+          width: 100,
           align: "center"
         }
       );
@@ -593,10 +663,10 @@ export const printBirth = async (req, res) => {
     doc
       .roundedRect(
         175,
-        535,
+        809,
         370,
-        42,
-        5
+        40,
+        6
       )
       .fill("#ECFDF5");
 
@@ -608,7 +678,7 @@ export const printBirth = async (req, res) => {
       .text(
         "✓ ACTE VALIDÉ PAR L'OFFICIER D'ÉTAT CIVIL",
         175,
-        550,
+        823,
         {
           width: 370,
           align: "center"
@@ -627,7 +697,7 @@ export const printBirth = async (req, res) => {
       .text(
         "L'OFFICIER D'ÉTAT CIVIL",
         370,
-        600,
+        858,
         {
           width: 175,
           align: "center"
@@ -642,28 +712,9 @@ export const printBirth = async (req, res) => {
       .text(
         "Signature et cachet",
         370,
-        625,
+        876,
         {
           width: 175,
-          align: "center"
-        }
-      );
-
-
-    // =====================================================
-    // TEXTE DE VÉRIFICATION
-    // =====================================================
-
-    doc
-      .fillColor(GREY)
-      .font("Helvetica")
-      .fontSize(7)
-      .text(
-        "Ce document est généré électroniquement par le système SIVEC.",
-        150,
-        670,
-        {
-          width: 395,
           align: "center"
         }
       );
@@ -678,9 +729,9 @@ export const printBirth = async (req, res) => {
       .font("Helvetica")
       .fontSize(7)
       .text(
-        `Document généré par le système SIVEC • ${new Date().getFullYear()}`,
+        `Document généré électroniquement par le système SIVEC • ${new Date().getFullYear()}`,
         50,
-        790,
+        912,
         {
           width: 495,
           align: "center"
@@ -688,18 +739,20 @@ export const printBirth = async (req, res) => {
       );
 
 
-    // Bande inférieure
+    // =====================================================
+    // BANDE INFÉRIEURE
+    // =====================================================
 
     doc
-      .rect(0, 820, 198, 7)
+      .rect(0, PAGE_HEIGHT - 8, 198.4, 8)
       .fill(GREEN);
 
     doc
-      .rect(198, 820, 199, 7)
+      .rect(198.4, PAGE_HEIGHT - 8, 198.4, 8)
       .fill(RED);
 
     doc
-      .rect(397, 820, 198, 7)
+      .rect(396.8, PAGE_HEIGHT - 8, 198.5, 8)
       .fill(YELLOW);
 
 
