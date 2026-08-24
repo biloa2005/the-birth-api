@@ -37,7 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ==========================================
 //  DÉFINITION DES ROUTES
-// ==========================================gs
+// ==========================================
 
 app.use('/api/',updateRoutes)// lion
 app.use('/api/', searchRoutes)// lion
@@ -46,6 +46,7 @@ app.use('/api/',pdfRoutes)
 app.use('/api/',attachmentRoutes )
 app.use('/api/',historyRoutes)
 app.use('/api/',validationRoutes)
+
 //swagger
 const swaggerDocument = YAML.load("./docs/swagger.yaml");
 

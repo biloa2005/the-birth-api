@@ -36,6 +36,7 @@ model Birth {
   sex            Sex      // Utilisation de l'enum pour éviter les erreurs de saisie
   status         BirthStatus @default(PENDING) // Statut de validation par défaut
   centerId       String
+  agentName     String?
   createdBy      String
   createdAt      DateTime @default(now())
 

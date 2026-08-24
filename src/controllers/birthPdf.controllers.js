@@ -4,62 +4,46 @@ import QRCode from "qrcode";
 
 // =====================================================
 // FORMAT DE PAGE PERSONNALISÉ : 21 cm x 33 cm
-// (1 cm = 28.3465 pt)
-// => légèrement plus long que l'A4 standard (21 x 29.7 cm)
 // =====================================================
 
 const CM = 28.3465;
-const PAGE_WIDTH = 21 * CM;   // ≈ 595.28 pt
-const PAGE_HEIGHT = 33 * CM;  // ≈ 935.43 pt
-
+const PAGE_WIDTH = 21 * CM;
+const PAGE_HEIGHT = 33 * CM;
 
 export const printBirth = async (req, res) => {
-
   try {
-
     const { id } = req.params;
-
 
     // =====================================================
     // RECHERCHER LA NAISSANCE
     // =====================================================
 
     const birth = await prisma.birth.findUnique({
-
       where: {
         id
       },
-
       include: {
         parents: true
       }
-
     });
 
-
     if (!birth) {
-
       return res.status(404).json({
         success: false,
         message: "Acte introuvable"
       });
-
     }
-
 
     // =====================================================
     // VÉRIFICATION DU STATUT
     // =====================================================
 
     if (birth.status !== "APPROVED") {
-
       return res.status(400).json({
         success: false,
         message: "Cet acte n'est pas encore validé"
       });
-
     }
-
 
     // =====================================================
     // URL DU QR CODE
@@ -67,7 +51,6 @@ export const printBirth = async (req, res) => {
 
     const verificationUrl =
       `http://localhost:3000/verify/${birth.id}`;
-
 
     // =====================================================
     // QR CODE
@@ -82,24 +65,18 @@ export const printBirth = async (req, res) => {
       }
     );
 
-
     // =====================================================
     // DOCUMENT — FORMAT 21 x 33 cm
     // =====================================================
 
     const doc = new PDFDocument({
-
       size: [PAGE_WIDTH, PAGE_HEIGHT],
-
       margin: 0,
-
       autoFirstPage: true
-
     });
 
-
     // =====================================================
-    // HEADERS
+    // HEADERS HTTP
     // =====================================================
 
     res.setHeader(
@@ -112,9 +89,7 @@ export const printBirth = async (req, res) => {
       `inline; filename="acte-${birth.actNumber}.pdf"`
     );
 
-
     doc.pipe(res);
-
 
     // =====================================================
     // COULEURS
@@ -127,7 +102,6 @@ export const printBirth = async (req, res) => {
     const DARK = "#1F2937";
     const GREY = "#6B7280";
     const LIGHT = "#F3F4F6";
-
 
     // =====================================================
     // BANDE SUPÉRIEURE
@@ -145,9 +119,8 @@ export const printBirth = async (req, res) => {
       .rect(396.8, 0, 198.5, 8)
       .fill(YELLOW);
 
-
     // =====================================================
-    // EN-TÊTE — RÉPUBLIQUE & DEVISE
+    // EN-TÊTE
     // =====================================================
 
     doc
@@ -164,7 +137,6 @@ export const printBirth = async (req, res) => {
         }
       );
 
-
     doc
       .fillColor(DARK)
       .font("Helvetica")
@@ -179,11 +151,6 @@ export const printBirth = async (req, res) => {
         }
       );
 
-
-    // =====================================================
-    // EN-TÊTE — MINISTÈRE
-    // =====================================================
-
     doc
       .fillColor(DARK)
       .font("Helvetica-Bold")
@@ -197,9 +164,6 @@ export const printBirth = async (req, res) => {
           align: "center"
         }
       );
-
-
-   
 
     // =====================================================
     // LIGNE TRICOLORE
@@ -217,7 +181,6 @@ export const printBirth = async (req, res) => {
       .rect(380, 154, 165, 3)
       .fill(YELLOW);
 
-
     // =====================================================
     // TITRE
     // =====================================================
@@ -231,7 +194,6 @@ export const printBirth = async (req, res) => {
         6
       )
       .fill(GREEN);
-
 
     doc
       .fillColor("#FFFFFF")
@@ -247,7 +209,6 @@ export const printBirth = async (req, res) => {
         }
       );
 
-
     // =====================================================
     // NUMÉRO ACTE
     // =====================================================
@@ -262,7 +223,6 @@ export const printBirth = async (req, res) => {
         238
       );
 
-
     doc
       .fillColor(RED)
       .font("Helvetica-Bold")
@@ -272,7 +232,6 @@ export const printBirth = async (req, res) => {
         50,
         255
       );
-
 
     // =====================================================
     // INFORMATIONS ENFANT
@@ -288,13 +247,9 @@ export const printBirth = async (req, res) => {
         297
       );
 
-
     doc
       .rect(50, 318, 495, 2)
       .fill(YELLOW);
-
-
-    // Cadre
 
     doc
       .roundedRect(
@@ -305,7 +260,6 @@ export const printBirth = async (req, res) => {
         6
       )
       .fill(LIGHT);
-
 
     doc
       .roundedRect(
@@ -319,9 +273,7 @@ export const printBirth = async (req, res) => {
       .lineWidth(1)
       .stroke();
 
-
     // Nom
-
     doc
       .fillColor(DARK)
       .font("Helvetica-Bold")
@@ -334,16 +286,13 @@ export const printBirth = async (req, res) => {
 
     doc
       .font("Helvetica")
-      .fontSize(10)
       .text(
         birth.childLastname || "-",
         190,
         358
       );
 
-
     // Prénom
-
     doc
       .font("Helvetica-Bold")
       .text(
@@ -360,9 +309,7 @@ export const printBirth = async (req, res) => {
         387
       );
 
-
     // Date
-
     doc
       .font("Helvetica-Bold")
       .text(
@@ -381,9 +328,7 @@ export const printBirth = async (req, res) => {
         416
       );
 
-
     // Lieu
-
     doc
       .font("Helvetica-Bold")
       .text(
@@ -400,9 +345,7 @@ export const printBirth = async (req, res) => {
         445
       );
 
-
     // Sexe
-
     doc
       .font("Helvetica-Bold")
       .text(
@@ -421,7 +364,6 @@ export const printBirth = async (req, res) => {
         358
       );
 
-
     // =====================================================
     // PARENTS
     // =====================================================
@@ -436,13 +378,9 @@ export const printBirth = async (req, res) => {
         495
       );
 
-
     doc
       .rect(50, 516, 495, 2)
       .fill(YELLOW);
-
-
-    // Cadre parents
 
     doc
       .roundedRect(
@@ -453,7 +391,6 @@ export const printBirth = async (req, res) => {
         6
       )
       .fill("#FFFFFF");
-
 
     doc
       .roundedRect(
@@ -467,14 +404,11 @@ export const printBirth = async (req, res) => {
       .lineWidth(1)
       .stroke();
 
-
     const parent = birth.parents?.[0];
-
 
     if (parent) {
 
       // PÈRE
-
       doc
         .fillColor(RED)
         .font("Helvetica-Bold")
@@ -485,7 +419,6 @@ export const printBirth = async (req, res) => {
           554
         );
 
-
       doc
         .fillColor(DARK)
         .font("Helvetica-Bold")
@@ -496,7 +429,6 @@ export const printBirth = async (req, res) => {
           582
         );
 
-
       doc
         .font("Helvetica")
         .text(
@@ -504,7 +436,6 @@ export const printBirth = async (req, res) => {
           160,
           582
         );
-
 
       doc
         .font("Helvetica-Bold")
@@ -514,7 +445,6 @@ export const printBirth = async (req, res) => {
           608
         );
 
-
       doc
         .font("Helvetica")
         .text(
@@ -523,9 +453,7 @@ export const printBirth = async (req, res) => {
           608
         );
 
-
       // MÈRE
-
       doc
         .fillColor(GREEN)
         .font("Helvetica-Bold")
@@ -536,7 +464,6 @@ export const printBirth = async (req, res) => {
           554
         );
 
-
       doc
         .fillColor(DARK)
         .font("Helvetica-Bold")
@@ -547,7 +474,6 @@ export const printBirth = async (req, res) => {
           582
         );
 
-
       doc
         .font("Helvetica")
         .text(
@@ -555,7 +481,6 @@ export const printBirth = async (req, res) => {
           400,
           582
         );
-
 
       doc
         .font("Helvetica-Bold")
@@ -565,7 +490,6 @@ export const printBirth = async (req, res) => {
           608
         );
 
-
       doc
         .font("Helvetica")
         .text(
@@ -573,9 +497,7 @@ export const printBirth = async (req, res) => {
           400,
           608
         );
-
     }
-
 
     // =====================================================
     // MENTIONS MARGINALES
@@ -621,7 +543,6 @@ export const printBirth = async (req, res) => {
       .lineWidth(0.5)
       .stroke();
 
-
     // =====================================================
     // ZONE BAS DE PAGE
     // =====================================================
@@ -638,9 +559,6 @@ export const printBirth = async (req, res) => {
       }
     );
 
-
-    // Texte QR
-
     doc
       .fillColor(GREY)
       .font("Helvetica")
@@ -654,7 +572,6 @@ export const printBirth = async (req, res) => {
           align: "center"
         }
       );
-
 
     // =====================================================
     // VALIDATION
@@ -670,7 +587,6 @@ export const printBirth = async (req, res) => {
       )
       .fill("#ECFDF5");
 
-
     doc
       .fillColor(GREEN)
       .font("Helvetica-Bold")
@@ -685,9 +601,8 @@ export const printBirth = async (req, res) => {
         }
       );
 
-
     // =====================================================
-    // SIGNATURE
+    // AGENT
     // =====================================================
 
     doc
@@ -695,30 +610,28 @@ export const printBirth = async (req, res) => {
       .font("Helvetica-Bold")
       .fontSize(9)
       .text(
-        "L'OFFICIER D'ÉTAT CIVIL",
-        370,
+        "AGENT AYANT ENREGISTRÉ L'ACTE",
+        175,
         858,
         {
-          width: 175,
+          width: 370,
           align: "center"
         }
       );
-
 
     doc
-      .fillColor(GREY)
-      .font("Helvetica")
-      .fontSize(8)
+      .fillColor(GREEN)
+      .font("Helvetica-Bold")
+      .fontSize(10)
       .text(
-        "Signature et cachet",
-        370,
+        birth.agentName || "-",
+        175,
         876,
         {
-          width: 175,
+          width: 370,
           align: "center"
         }
       );
-
 
     // =====================================================
     // PIED DE PAGE
@@ -738,7 +651,6 @@ export const printBirth = async (req, res) => {
         }
       );
 
-
     // =====================================================
     // BANDE INFÉRIEURE
     // =====================================================
@@ -755,13 +667,11 @@ export const printBirth = async (req, res) => {
       .rect(396.8, PAGE_HEIGHT - 8, 198.5, 8)
       .fill(YELLOW);
 
-
     // =====================================================
     // TERMINER
     // =====================================================
 
     doc.end();
-
 
   } catch (error) {
 
@@ -770,21 +680,12 @@ export const printBirth = async (req, res) => {
       error
     );
 
-
     if (!res.headersSent) {
-
       return res.status(500).json({
-
         success: false,
-
         message: "Erreur interne du serveur",
-
         error: error.message
-
       });
-
     }
-
   }
-
 };
