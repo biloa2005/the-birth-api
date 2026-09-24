@@ -7,7 +7,7 @@ import QRCode from "qrcode";
 // =====================================================
 
 const CM = 28.3465;
-const PAGE_WIDTH = 21 * CM;
+const PAGE_WIDTH = 16 * CM;
 const PAGE_HEIGHT = 33 * CM;
 
 export const printBirth = async (req, res) => {
@@ -185,27 +185,19 @@ export const printBirth = async (req, res) => {
     // TITRE
     // =====================================================
 
-    doc
-      .roundedRect(
-        60,
-        171,
-        475,
-        50,
-        6
-      )
-      .fill(GREEN);
+   
 
     doc
-      .fillColor("#FFFFFF")
+      .fillColor("#181717")
       .font("Helvetica-Bold")
       .fontSize(20)
       .text(
         "ACTE DE NAISSANCE",
-        60,
+        50,
         187,
         {
-          width: 475,
-          align: "center"
+          width: 300,
+         
         }
       );
 
@@ -224,7 +216,7 @@ export const printBirth = async (req, res) => {
       );
 
     doc
-      .fillColor(RED)
+      .fillColor(DARK)
       .font("Helvetica-Bold")
       .fontSize(15)
       .text(
@@ -247,31 +239,9 @@ export const printBirth = async (req, res) => {
         297
       );
 
-    doc
-      .rect(50, 318, 495, 2)
-      .fill(YELLOW);
+    
 
-    doc
-      .roundedRect(
-        50,
-        335,
-        495,
-        130,
-        6
-      )
-      .fill(LIGHT);
-
-    doc
-      .roundedRect(
-        50,
-        335,
-        495,
-        130,
-        6
-      )
-      .strokeColor("#D1D5DB")
-      .lineWidth(1)
-      .stroke();
+    
 
     // Nom
     doc
@@ -350,8 +320,8 @@ export const printBirth = async (req, res) => {
       .font("Helvetica-Bold")
       .text(
         "Sexe",
-        390,
-        358
+        70,
+        476
       );
 
     doc
@@ -360,8 +330,8 @@ export const printBirth = async (req, res) => {
         birth.sex === "MALE"
           ? "Masculin"
           : "Féminin",
-        450,
-        358
+        190,
+        476
       );
 
     // =====================================================
@@ -378,39 +348,14 @@ export const printBirth = async (req, res) => {
         495
       );
 
-    doc
-      .rect(50, 516, 495, 2)
-      .fill(YELLOW);
-
-    doc
-      .roundedRect(
-        50,
-        533,
-        495,
-        130,
-        6
-      )
-      .fill("#FFFFFF");
-
-    doc
-      .roundedRect(
-        50,
-        533,
-        495,
-        130,
-        6
-      )
-      .strokeColor("#D1D5DB")
-      .lineWidth(1)
-      .stroke();
-
+   
     const parent = birth.parents?.[0];
 
     if (parent) {
 
       // PÈRE
       doc
-        .fillColor(RED)
+        .fillColor(DARK)
         .font("Helvetica-Bold")
         .fontSize(11)
         .text(
@@ -455,13 +400,13 @@ export const printBirth = async (req, res) => {
 
       // MÈRE
       doc
-        .fillColor(GREEN)
+        .fillColor(DARK)
         .font("Helvetica-Bold")
         .fontSize(11)
         .text(
           "MÈRE",
-          320,
-          554
+          70,
+          629
         );
 
       doc
@@ -470,32 +415,32 @@ export const printBirth = async (req, res) => {
         .fontSize(10)
         .text(
           "Nom",
-          320,
-          582
+          70,
+          646
         );
 
       doc
         .font("Helvetica")
         .text(
           parent.motherName || "-",
-          400,
-          582
+          160,
+          646
         );
 
       doc
         .font("Helvetica-Bold")
         .text(
           "Profession",
-          320,
-          608
+          70,
+          667
         );
 
       doc
         .font("Helvetica")
         .text(
           parent.motherJob || "-",
-          400,
-          608
+          160,
+          667
         );
     }
 
@@ -513,10 +458,7 @@ export const printBirth = async (req, res) => {
         693
       );
 
-    doc
-      .rect(50, 714, 495, 2)
-      .fill(YELLOW);
-
+    
     doc
       .roundedRect(
         50,
@@ -651,22 +593,7 @@ export const printBirth = async (req, res) => {
         }
       );
 
-    // =====================================================
-    // BANDE INFÉRIEURE
-    // =====================================================
-
-    doc
-      .rect(0, PAGE_HEIGHT - 8, 198.4, 8)
-      .fill(GREEN);
-
-    doc
-      .rect(198.4, PAGE_HEIGHT - 8, 198.4, 8)
-      .fill(RED);
-
-    doc
-      .rect(396.8, PAGE_HEIGHT - 8, 198.5, 8)
-      .fill(YELLOW);
-
+   
     // =====================================================
     // TERMINER
     // =====================================================
