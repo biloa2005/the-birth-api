@@ -579,7 +579,7 @@ export const printBirth = async (req, res) => {
       );
 
     doc
-      .fillColor(GREEN)
+      
       .font("Helvetica-Bold")
       .fontSize(9.5)
       .text(
